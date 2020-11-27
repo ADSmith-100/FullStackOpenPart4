@@ -1,3 +1,5 @@
+// import _ from "lodash";
+
 const dummy = (blogs) => {
   return 1;
 };
@@ -23,12 +25,22 @@ const favoriteBlog = (blogs) => {
   } else {
     let blogLikes = blogs.map((b) => b.likes);
     let mostLikes = blogLikes.indexOf(Math.max(...blogLikes));
-    return blogs[mostLikes];
+    return { author: blogs[mostLikes].author, blogs: 1 };
   }
 };
 
+const mostBlogs = (blogs) => {
+  if (blogs.length === 1) {
+    return { author: blogs[0].author, blogs: 1 };
+  } else if (blogs.length === 0) {
+    return "no blogs : /";
+  } else {
+    return "fuck you";
+  }
+};
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
+  mostBlogs,
 };
