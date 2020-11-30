@@ -1,4 +1,5 @@
-// import _ from "lodash";
+// const _ = require("underscore");
+const _ = require("lodash");
 
 const dummy = (blogs) => {
   return 1;
@@ -35,7 +36,13 @@ const mostBlogs = (blogs) => {
   } else if (blogs.length === 0) {
     return "no blogs : /";
   } else {
-    return "fuck you";
+    let authors = blogs.map((b) => b.author);
+    const result = _.values(_.groupBy(authors)).map((d) => ({
+      author: d[0],
+      blogs: d.length,
+    }));
+
+    return result.pop();
   }
 };
 module.exports = {
