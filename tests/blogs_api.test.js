@@ -4,7 +4,7 @@ const app = require("../app");
 
 const api = supertest(app);
 const Blog = require("../models/blog");
-const initialBlog = [
+const initialBlogs = [
   {
     id: 12345678910,
     title: "TEST TILE 1",
@@ -19,17 +19,12 @@ const initialBlog = [
     url: "www.testurl2.com",
     likes: 16,
   },
-  {
-    content: "Browser can execute only Javascript",
-    date: new Date(),
-    important: true,
-  },
 ];
 beforeEach(async () => {
   await Blog.deleteMany({});
-  let blogObject = new Blog(initialBlog[0]);
+  let blogObject = new Blog(initialBlogs[0]);
   await blogObject.save();
-  blogObject = new Blog(initialBlog[1]);
+  blogObject = new Blog(initialBlogs[1]);
   await blogObject.save();
 });
 test("blogs are returned as json", async () => {
@@ -42,7 +37,13 @@ test("blogs are returned as json", async () => {
 test("returns correct amount of blog posts", async () => {
   const response = await api.get("/api/blogs");
 
-  expect(response.body).toHaveLength(2);
+  expect(response.body).toHaveLength(initialBlogs.length);
+});
+
+test("verifies that the unique ident property of the blog posts is id, not _id", async () => {
+  const response = await api.get("/api/blogs");
+  console.log(response.body);
+  expect(response.body[0].id).toBeDefined();
 });
 
 afterAll(() => {
