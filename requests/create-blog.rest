@@ -2,8 +2,8 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-  "title": "NEW",
-  "author": "TTES",
+  "title": "BLARG",
+  "author": "GGGGGG",
   "url": "www.dumbass.com",
-  "likes": 6964449
+  "likes": 69654444449
 }
