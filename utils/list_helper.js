@@ -45,9 +45,25 @@ const mostBlogs = (blogs) => {
     return result.pop();
   }
 };
+
+const mostLikes = (blogs) => {
+  if (blogs.length === 1) {
+    return { author: blogs[0].author, likes: blogs[0].likes };
+  } else if (blogs.length === 0) {
+    return "no blogs : /";
+  } else {
+    let authors = blogs.map((b) => b.author);
+    const result = _.values(_.groupBy(authors)).map((d) => ({
+      author: d[0],
+    }));
+    console.log(authors);
+  }
+};
+
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
   mostBlogs,
+  mostLikes,
 };
