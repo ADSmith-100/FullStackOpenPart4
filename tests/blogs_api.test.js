@@ -54,6 +54,34 @@ test("a valid blog can be added", async () => {
   expect(titles).toContain("NEW TITLE");
 });
 
+test("if the likes property is missing, it will default to 0", async () => {
+  const zeroLikesBlog = {
+    title: "Zero TITLE",
+    author: "Zero Author ",
+    url: "www.zeroURL.com",
+  };
+
+  await api
+    .post("/api/blogs")
+    .send(zeroLikesBlog)
+    .expect(200)
+    .expect("Content-Type", /application\/json/);
+
+  const blogsAtEnd = await helper.blogsInDb();
+  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
+
+  const likes = blogsAtEnd.map((b) => b.likes);
+  expect(likes).toContain(0);
+});
+
+test("if the title and url properties are missing, the backend responds 400 Bad Request", async () => {
+  const missingTitleUrlBlog = {
+    author: "Zero Author ",
+  };
+
+  await api.post("/api/blogs").send(missingTitleUrlBlog).expect(400);
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
