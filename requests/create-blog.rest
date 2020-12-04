@@ -1,11 +1,11 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFzbWl0aCIsImlkIjoiNWZjOWE4MjE1ZWI5NWQ2NDZmY2QwZTc5IiwiaWF0IjoxNjA3MTExOTUzfQ.g2tloo6L2dBUMzOpIErd9lTwyTOIYaQSb9dwCqn4zLg
 
 {
-  "title": "POOOOO",
-  "author": "GGGGGG",
+  "title": "Test Auth",
+  "author": "bubba",
   "url": "www.dumbass.com",
-  "likes": 69654444449,
-  "userId": "5fc9a69cbbce776261df9dfd"
+  "likes": 12
 }
 
