@@ -2,8 +2,10 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-  "title": "stupid title",
+  "title": "POOOOO",
   "author": "GGGGGG",
   "url": "www.dumbass.com",
-  "likes": 69654444449
+  "likes": 69654444449,
+  "userId": "5fc9a69cbbce776261df9dfd"
 }
+
