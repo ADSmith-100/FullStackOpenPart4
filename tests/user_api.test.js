@@ -1,5 +1,11 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/user");
+const mongoose = require("mongoose");
+const supertest = require("supertest");
+const app = require("../app");
+
+const api = supertest(app);
+const helper = require("./blogs_helper");
 
 describe("when there is initially one user in db", () => {
   beforeEach(async () => {
@@ -53,4 +59,30 @@ describe("when there is initially one user in db", () => {
     const usersAtEnd = await helper.usersInDb();
     expect(usersAtEnd).toHaveLength(usersAtStart.length);
   });
+  test("creation fails with proper statuscode and message if username is shorter than 3 chars", async () => {
+    const usersAtStart = await helper.usersInDb();
+
+    const newUser = {
+      username: "ro",
+      name: "test",
+      password: "jkfkldlskjdj",
+    };
+
+    const result = await api
+      .post("/api/users")
+      .send(newUser)
+      .expect(400)
+      .expect("Content-Type", /application\/json/);
+
+    expect(result.body.error).toContain(
+      "is shorter than the minimum allowed length"
+    );
+
+    const usersAtEnd = await helper.usersInDb();
+    expect(usersAtEnd).toHaveLength(usersAtStart.length);
+  });
+});
+
+afterAll(() => {
+  mongoose.connection.close();
 });
