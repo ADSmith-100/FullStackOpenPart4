@@ -12,14 +12,14 @@ let token = "";
 beforeEach(async () => {
   await User.deleteMany({});
   const saltRounds = 10;
-  const passwordHash = await bcrypt.hash("testPassword", saltRounds);
+  const passwordHash = await bcrypt.hash("rootbeer", saltRounds);
   const user = new User({ username: "testUser", passwordHash });
 
   await user.save();
 
   await api
     .post("/api/login")
-    .send({ username: "testUser", password: "testPassword" })
+    .send({ username: "testUser", password: "rootbeer" })
     .then((response) => {
       token = response.body.token;
     });
