@@ -1,5 +1,11 @@
 const Blog = require("../models/blog");
 const User = require("../models/user");
+const jwt = require("jsonwebtoken");
+
+const initialUsers = [
+  { id: 69, username: "testUser", name: "testName" },
+  { id: 96, username: "testUser2", name: "testName2" },
+];
 
 const initialBlogs = [
   {
@@ -8,6 +14,10 @@ const initialBlogs = [
     author: "Test Author 1",
     url: "www.testurl1.com",
     likes: 3,
+    // user: {
+    //   name: "testName",
+    //   id: "69",
+    // },
   },
   {
     id: 1987654321,
@@ -15,6 +25,10 @@ const initialBlogs = [
     author: "Test Author 2",
     url: "www.testurl2.com",
     likes: 16,
+    // user: {
+    //   name: "testUser",
+    //   id: "69",
+    // },
   },
 ];
 
@@ -36,9 +50,19 @@ const usersInDb = async () => {
   return users.map((u) => u.toJSON());
 };
 
+function makeAuthHeader(testUser, secret = process.env.SECRET) {
+  const token = jwt.sign({ username: testUser.username }, secret, {
+    subject: testUser.username,
+    algorithm: "HS256",
+  });
+  return `bearer ${token}`;
+}
+
 module.exports = {
   initialBlogs,
+  initialUsers,
   nonExistingId,
   blogsInDb,
   usersInDb,
+  makeAuthHeader,
 };

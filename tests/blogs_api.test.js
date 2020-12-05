@@ -1,18 +1,36 @@
 const mongoose = require("mongoose");
 const supertest = require("supertest");
 const app = require("../app");
-
 const api = supertest(app);
 const Blog = require("../models/blog");
-const helper = require("./blogs_helper");
+const User = require("../models/user");
+const helper = require("./blogs_helper.test");
+const bcrypt = require("bcrypt");
+
+let token = "";
 
 beforeEach(async () => {
+  await User.deleteMany({});
+  const saltRounds = 10;
+  const passwordHash = await bcrypt.hash("testPassword", saltRounds);
+  const user = new User({ username: "testUser", passwordHash });
+
+  await user.save();
+
+  await api
+    .post("/api/login")
+    .send({ username: "testUser", password: "testPassword" })
+    .then((response) => {
+      token = response.body.token;
+    });
+
   await Blog.deleteMany({});
-  let blogObject = new Blog(helper.initialBlogs[0]);
-  await blogObject.save();
-  blogObject = new Blog(helper.initialBlogs[1]);
-  await blogObject.save();
+  const blogs = helper.initialBlogs.map(
+    (blog) => new Blog({ ...blog, user: user.id })
+  );
+  await Blog.insertMany(helper.initialBlogs);
 });
+
 test("blogs are returned as json", async () => {
   await api
     .get("/api/blogs")
@@ -33,6 +51,7 @@ test("verifies that the unique ident property of the blog posts is id, not _id",
 });
 
 test("a valid blog can be added", async () => {
+  console.log(token);
   const newBlog = {
     title: "NEW TITLE",
     author: "NEW Author ",
@@ -42,6 +61,7 @@ test("a valid blog can be added", async () => {
 
   await api
     .post("/api/blogs")
+    .set("Authorization", `bearer ${token}`)
     .send(newBlog)
     .expect(200)
     .expect("Content-Type", /application\/json/);
@@ -63,6 +83,7 @@ test("if the likes property is missing, it will default to 0", async () => {
 
   await api
     .post("/api/blogs")
+    .set("Authorization", `bearer ${token}`)
     .send(zeroLikesBlog)
     .expect(200)
     .expect("Content-Type", /application\/json/);
@@ -79,15 +100,25 @@ test("if the title and url properties are missing, the backend responds 400 Bad 
     author: "Zero Author ",
   };
 
-  await api.post("/api/blogs").send(missingTitleUrlBlog).expect(400);
+  await api
+    .post("/api/blogs")
+    .set("Authorization", `bearer ${token}`)
+    .send(missingTitleUrlBlog)
+    .expect(400);
 });
 
 describe("deletion of a blog", () => {
   test("succeeds with status code 204 if id is valid", async () => {
+    await api.post("/api/blogs").set("Authorization", `Bearer ${token}`);
+
     const blogsAtStart = await helper.blogsInDb();
     const blogToDelete = blogsAtStart[0];
 
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+    await api
+
+      .delete(`/api/blogs/${blogToDelete.id}`)
+
+      .expect(204);
 
     const blogsAtEnd = await helper.blogsInDb();
 
