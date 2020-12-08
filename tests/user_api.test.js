@@ -5,7 +5,7 @@ const supertest = require("supertest");
 const app = require("../app");
 
 const api = supertest(app);
-const helper = require("./blogs_helper.test");
+const helper = require("./blogs_helper");
 
 describe("when there is initially one user in db", () => {
   beforeEach(async () => {

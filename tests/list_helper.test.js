@@ -173,7 +173,11 @@ describe("favorite blog", () => {
 
   test("of a bigger list is calculated correctly", () => {
     const result = listHelper.favoriteBlog(bigList);
-    expect(result).toEqual(bigList[2]);
+    expect(result).toEqual({
+      title: "Canonical string reduction",
+      author: "Edsger W. Dijkstra",
+      likes: 12,
+    });
   });
 });
 
@@ -262,7 +266,7 @@ describe("author with most blogs", () => {
   });
 });
 
-describe.only("author with most likes", () => {
+describe("author with most likes", () => {
   const listWithOneBlog = [
     {
       _id: "5a422aa71b54a676234d17f8",

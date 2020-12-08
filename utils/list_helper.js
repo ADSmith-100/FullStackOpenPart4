@@ -26,7 +26,11 @@ const favoriteBlog = (blogs) => {
   } else {
     let blogLikes = blogs.map((b) => b.likes);
     let mostLikes = blogLikes.indexOf(Math.max(...blogLikes));
-    return { author: blogs[mostLikes].author, blogs: 1 };
+    return {
+      title: blogs[mostLikes].title,
+      author: blogs[mostLikes].author,
+      likes: blogs[mostLikes].likes,
+    };
   }
 };
 
@@ -52,11 +56,17 @@ const mostLikes = (blogs) => {
   } else if (blogs.length === 0) {
     return "no blogs : /";
   } else {
-    let authors = blogs.map((b) => b.author);
-    const result = _.values(_.groupBy(authors)).map((d) => ({
-      author: d[0],
-    }));
-    console.log(authors);
+    //list authors by number of blogs and gives blogs for each author
+    const blogsByAuthor = _.toPairs(_.groupBy(blogs, (b) => b.author));
+    //makes list of authors and calculates total likes of author blogs, then flips order so most likes is first in list.
+    const likesByAuthor = blogsByAuthor
+      .map(([author, blogs]) => ({
+        author,
+        likes: blogs.reduce((s, b) => s + b.likes, 0),
+      }))
+      .sort((a1, a2) => a2.likes - a1.likes);
+    console.log(likesByAuthor[0]);
+    return likesByAuthor[0];
   }
 };
 

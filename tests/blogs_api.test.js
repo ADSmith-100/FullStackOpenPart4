@@ -4,7 +4,7 @@ const app = require("../app");
 const api = supertest(app);
 const Blog = require("../models/blog");
 const User = require("../models/user");
-const helper = require("./blogs_helper.test");
+const helper = require("./blogs_helper");
 const bcrypt = require("bcrypt");
 
 let token = "";
@@ -111,18 +111,30 @@ describe("deletion of a blog", () => {
   test("succeeds with status code 204 if id is valid", async () => {
     await api.post("/api/blogs").set("Authorization", `Bearer ${token}`);
 
-    const blogsAtStart = await helper.blogsInDb();
-    const blogToDelete = blogsAtStart[0];
+    const newBlog = {
+      title: "NEW TITLE",
+      author: "NEW Author ",
+      url: "www.newURL.com",
+      likes: 12,
+    };
 
+    await api
+      .post("/api/blogs")
+      .set("Authorization", `bearer ${token}`)
+      .send(newBlog);
+
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToDelete = blogsAtStart[blogsAtStart.length - 1];
+    console.log(blogsAtStart);
     await api
 
       .delete(`/api/blogs/${blogToDelete.id}`)
-
+      .set("Authorization", `bearer ${token}`)
       .expect(204);
 
     const blogsAtEnd = await helper.blogsInDb();
 
-    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1);
+    expect(blogsAtEnd).toHaveLength(blogsAtStart.length - 1);
 
     const titles = blogsAtEnd.map((r) => r.title);
 
@@ -133,8 +145,3 @@ describe("deletion of a blog", () => {
 afterAll(() => {
   mongoose.connection.close();
 });
-//
-//
-//
-//
-//\\//\\//\\//\\//\\//\\//\\
